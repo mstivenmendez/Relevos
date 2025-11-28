@@ -1,53 +1,49 @@
 package maicoll.dominio;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-   public class Equipo extends Thread {
-      private String nombreEquipo;
-      private Corredor corredor1;
-      private Corredor corredor2;
-      private Corredor corredor3;
+public class Equipo {
 
-      public Equipo(String nombreEquipo) {
-         this.nombreEquipo = nombreEquipo;
-         inicializarCorredores();
-      }
+   private String nombreEquipo;
+   private ExecutorService organizador;
+   private long tiempoInicio;
+   private long tiempoFin;
 
-      private void inicializarCorredores() {
-         // Crear los 3 corredores con la cadena de responsabilidad
-         corredor1 = new Corredor(nombreEquipo + "-Corredor1", null, nombreEquipo);
-         corredor2 = new Corredor(nombreEquipo + "-Corredor2", corredor1, nombreEquipo);
-         corredor3 = new Corredor(nombreEquipo + "-Corredor3", corredor2, nombreEquipo);
-      }
-
-      @Override
-      public void run() {
-         try {
-            mostrarMensaje("" + nombreEquipo + " está listo para competir!");
-
-            // Iniciar todos los corredores
-            corredor1.start();
-            corredor2.start();
-            corredor3.start();
-
-            // Esperar a que todos terminen
-            corredor1.join();
-            corredor2.join();
-            corredor3.join();
-
-            mostrarMensaje("" + nombreEquipo + " ha completado la carrera!");
-
-         } catch (InterruptedException e) {
-            mostrarMensaje("ERROR: " + nombreEquipo + " fue interrumpido");
-            e.printStackTrace();
-         }
-      }
-
-      private void mostrarMensaje(String mensaje) {
-         System.out.println(mensaje);
-      }
-
-      public String getNombreEquipo() {
-         return nombreEquipo;
-      }
+   public Equipo(String nombreEquipo) {
+      this.nombreEquipo = nombreEquipo;
+      this.organizador = Executors.newSingleThreadExecutor();
    }
 
+   public void comenzarCarrera() {
+      System.out.println("El equipo " + nombreEquipo + " está listo en la línea de salida.");
+
+      Corredor c1 = new Corredor(nombreEquipo + "-Corredor1");
+      Corredor c2 = new Corredor(nombreEquipo + "-Corredor2");
+      Corredor c3 = new Corredor(nombreEquipo + "-Corredor3");
+
+      tiempoInicio = System.currentTimeMillis();
+
+      organizador.execute(c1);
+      organizador.execute(c2);
+      organizador.execute(c3);
+
+      organizador.shutdown();
+   }
+
+   public ExecutorService getOrganizador() {
+      return organizador;
+   }
+
+   public void marcarFin() {
+      tiempoFin = System.currentTimeMillis();
+   }
+
+   public long getTiempoTotal() {
+      return tiempoFin - tiempoInicio;
+   }
+
+   public String getNombreEquipo() {
+      return nombreEquipo;
+   }
+}
