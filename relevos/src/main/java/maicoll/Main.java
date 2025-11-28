@@ -5,19 +5,16 @@ import maicoll.dominio.Equipo;
 public class Main {
    public static void main(String[] args) {
 
-      // Mensaje de bienvenida
       System.out.println("¡Bienvenido a la Carrera de Relevos!");
       System.out.println("Competirán 3 equipos con 3 corredores cada uno.\n");
 
-      Equipo equipoRojo = new Equipo(" Rojo");
+      Equipo equipoRojo = new Equipo("Rojo");
       Equipo equipoAzul = new Equipo("Azul");
       Equipo equipoVerde = new Equipo("Verde");
 
       System.out.println("======================================");
       System.out.println("        ¡LA CARRERA COMIENZA!");
       System.out.println("======================================\n");
-
-      long inicio = System.currentTimeMillis();
 
       equipoRojo.start();
       equipoAzul.start();
@@ -28,13 +25,28 @@ public class Main {
          equipoAzul.join();
          equipoVerde.join();
 
-         long tiempoTotal = System.currentTimeMillis() - inicio;
+         // Tiempos individuales
+         long tiempoRojo = equipoRojo.getTiempoTotal();
+         long tiempoAzul = equipoAzul.getTiempoTotal();
+         long tiempoVerde = equipoVerde.getTiempoTotal();
+
+         // Determinar ganador
+         Equipo ganador = equipoRojo;
+         if (tiempoAzul < ganador.getTiempoTotal())
+            ganador = equipoAzul;
+         if (tiempoVerde < ganador.getTiempoTotal())
+            ganador = equipoVerde;
 
          System.out.println("\n======================================");
          System.out.println("          ¡CARRERA COMPLETADA!");
          System.out.println("======================================");
-         System.out.println("Tiempo total: " + (tiempoTotal / 1000.0) + " segundos");
-         System.out.println("Revisa arriba los detalles de cada corredor.");
+
+         System.out.println("Tiempo del equipo Rojo:  " + (tiempoRojo / 1000.0) + " s");
+         System.out.println("Tiempo del equipo Azul:  " + (tiempoAzul / 1000.0) + " s");
+         System.out.println("Tiempo del equipo Verde: " + (tiempoVerde / 1000.0) + " s");
+
+         System.out.println("\n🏆 EL EQUIPO GANADOR ES: **" + ganador.getNombreEquipo() + "** 🏆");
+
          System.out.println("======================================");
 
       } catch (InterruptedException e) {
